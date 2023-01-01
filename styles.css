@@ -1,4 +1,94 @@
 html,
 body {
   margin: 0px;
+  height: 100vh;
+}
+
+.container{
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: 100px 1fr 100px;
+}
+
+.header{
+  grid-column:span 2 ;
+  text-align: center;
+}
+.sidebar{
+  grid-column: 1/2;
+  grid-row: 2/3;
+  border-right: 1px solid black;
+}
+
+.content{
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 75px 1fr;
+  margin: 35px;
+}
+.buttons{
+  margin: 0px 15px 0px auto;
+}
+.wrapper{
+  
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(350px,1fr));
+  gap: 50px;
+}
+
+.form-wrapper{
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  max-width: 250px;
+}
+.form-wrapper button{
+  align-self: center;
+  margin: 15px 0px;
+}
+.form-wrapper input{
+  margin: 15px 0px;
+  
+}
+.form-wrapper textarea{
+  height: 150px;
+  margin: 15px 0px;
+}
+.project{
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  border-radius: 15px;
+  height: 150px;
+  justify-content: space-between;
+}
+.project .p-wrapper{
+  flex: 1;
+}
+.project .checkbox-wrapper{
+  margin: 15px;
+  align-self: flex-end;
+}
+
+.todo{
+  max-width: 250px;
+  height: 75px;
+}
+.footer{
+  grid-column: span 2;
+  text-align: center;
+}
+
+li{
+  list-style-type: none;
+  margin: 15px 0px;
+}
+
+.todo-wrapper{
+  display: flex;  
+  flex-direction: column;
+  align-items: center;
 }
