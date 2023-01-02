@@ -1,9 +1,19 @@
 html,
 body {
+  color: #e8e6e3;
   margin: 0px;
   height: 100vh;
+  background-color: #131516;
+  color-scheme: dark;
 }
 
+button{
+  border: 1px solid #e8e6e3;
+  border-radius: 5px;
+}
+div{
+  padding-left: 10px;
+}
 .container{
   height: 100%;
   display: grid;
@@ -14,7 +24,9 @@ body {
 .header{
   grid-column:span 2 ;
   text-align: center;
+  margin: auto auto;
 }
+
 .sidebar{
   grid-column: 1/2;
   grid-row: 2/3;
@@ -75,18 +87,21 @@ body {
 
 .todo{
   max-width: 250px;
-  height: 75px;
 }
 .footer{
   grid-column: span 2;
   text-align: center;
+  margin: auto;
 }
 
 li{
   list-style-type: none;
   margin: 15px 0px;
 }
-
+a{
+  text-decoration: none;
+  color: #e8e6e3;
+}
 .todo-wrapper{
   display: flex;  
   flex-direction: column;
@@ -99,4 +114,16 @@ li{
 .cont{
   display: flex;
 }
+#back{
+  margin-top: 15px;
+}
+#projectnamediv{
+  padding: 25px;
+  text-align: center;
+  margin-bottom: 15px;
+  background-color: #222222;
+}
 
+#completecontainer{
+  text-align: end;
+}
