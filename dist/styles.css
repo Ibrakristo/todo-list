@@ -92,3 +92,11 @@ li{
   flex-direction: column;
   align-items: center;
 }
+
+#delete{
+  max-width: 25px;
+}
+.cont{
+  display: flex;
+}
+
