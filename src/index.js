@@ -1,5 +1,11 @@
 import format from "date-fns/format";
 import differenceInHours from "date-fns/differenceInHours";
+let storage = window.localStorage;
+
+function saveproject() {
+  let save = JSON.stringify(projects);
+  storage.setItem("projects", save);
+}
 function check(name) {
   return {
     name,
@@ -86,9 +92,15 @@ let projects = (function projects() {
 let dom = (function () {
   function _init() {
     let today = document.querySelector(".today");
-    today.addEventListener("click", (e)=>{  _buttons.innerHTML = "";_wrapper.innerHTML = "";e.preventDefault(); showtodaytodos();});
+    today.addEventListener("click", (e) => {
+      e.preventDefault();
+      showtodaytodos();
+    });
     let upcoming = document.querySelector(".upcoming");
-    upcoming.addEventListener("click",(e)=>{_buttons.innerHTML = "";_wrapper.innerHTML = "";e.preventDefault(); showupcomingtodos();})
+    upcoming.addEventListener("click", (e) => {
+      e.preventDefault();
+      showupcomingtodos();
+    });
     let projectAnchor = document.querySelector(".projects");
     projectAnchor.addEventListener("click", (e) => {
       e.preventDefault();
@@ -162,8 +174,8 @@ let dom = (function () {
       removebutton.id = "delete";
       removebutton.setAttribute("data-rem", index);
       removebutton.addEventListener("click", removecheck);
-      removebutton.src ="./icons/delete.svg";
-      
+      removebutton.src = "./icons/delete.svg";
+
       let check = document.createElement("input");
       check.id = `check-box${index++}`;
       check.placeholder = "add a CheckBox";
@@ -207,6 +219,7 @@ let dom = (function () {
           notestext,
           checklistvalue
         );
+        saveproject();
         e.preventDefault();
         showtodos(num, true);
       }
@@ -236,10 +249,12 @@ let dom = (function () {
 
       if (form.checkValidity()) {
         projects.addToList(nameText, descriptionText);
+        saveproject();
         e.preventDefault();
         showMyProjects();
       }
     }
+
     _wrapper.appendChild(form);
   }
   let showMyProjects = function () {
@@ -287,6 +302,7 @@ let dom = (function () {
       projects.default = index;
       e.target.disabled = true;
       e.target.checked = true;
+      saveproject();
     }
   };
   function showtodos(e) {
@@ -303,22 +319,25 @@ let dom = (function () {
     let temp = projects.getFromList(num);
     let list = temp.getList;
     for (let i = 0; i < list.length; i++) {
-      showMinimumtoDo(list[i], i);
+      showMinimumtoDo(list[i], i, num,showtodos);
     }
   }
-  function showMinimumtoDo(obj, index) {
+  function showMinimumtoDo(obj, todoindex, projectindex,reference) {
     let todo = document.createElement("div");
     todo.classList.add("todo");
-    todo.setAttribute("data-key", index);
-    if (arguments.length == 3) {
+    todo.setAttribute("data-key", todoindex);
+    todo.setAttribute("data-project", projectindex);
+    if (arguments.length == 5) {
       let projectname = document.createElement("div");
-      projectname.innerText = arguments[2];
+      projectname.innerText = projects.getFromList(projectindex).name;
+      projectname.id = "projectnamediv";
       todo.appendChild(projectname);
     }
     let title = document.createElement("p");
     let dueDate = document.createElement("p");
 
     let div = document.createElement("div");
+    div.id = "completecontainer";
     let check = document.createElement("input");
     check.type = "checkbox";
     check.id = "complete";
@@ -327,13 +346,11 @@ let dom = (function () {
     let checklabel = document.createElement("label");
     checklabel.htmlFor = "complete";
     checklabel.innerText = "Completed";
-
-    div.appendChild(check);
     div.appendChild(checklabel);
-
+    div.appendChild(check);
+ 
     title.innerText = obj.title;
     dueDate.innerText = format(obj.dueDate, "Pp");
-
     let detailsButton = document.createElement("button");
     detailsButton.innerText = "Details";
     detailsButton.addEventListener("click", details);
@@ -345,18 +362,21 @@ let dom = (function () {
 
     function details(e) {
       let indextodo = e.target.parentElement.getAttribute("data-key");
-      let indexproject = _createtodoButton.getAttribute("data-project");
-      showtoDo(projects.getList[indexproject].getList[indextodo], indextodo);
+      let indexproject = e.target.parentElement.getAttribute("data-project");
+      
+      showtoDo(projects.getList[indexproject].getList[indextodo], indextodo,indexproject , reference);
     }
   }
-  function showtoDo(obj, indextodo) {
+  function showtoDo(obj, indextodo,projectindex,reference) {
     _wrapper.innerHTML = "";
     let todo = document.createElement("div");
     todo.classList.add("todo-wrapper");
     todo.setAttribute("data-key", indextodo);
-    if (arguments.length == 3) {
+    todo.setAttribute("data-project", projectindex);
+    if (arguments.length == 5) {
       let projectname = document.createElement("div");
-      projectname.innerText = arguments[2];
+      projectname.innerText = projects.getFromList(projectindex).name;
+      projectname.id = "projectnamediv";
       todo.appendChild(projectname);
     }
     let title = document.createElement("p");
@@ -402,6 +422,7 @@ let dom = (function () {
     todo.appendChild(checklist);
     _wrapper.appendChild(todo);
     let backButton = document.createElement("button");
+    backButton.id = "back";
     backButton.innerText = "Done.";
 
     backButton.type = "button";
@@ -409,14 +430,14 @@ let dom = (function () {
     todo.appendChild(backButton);
     function back(e) {
       let indexproject = _createtodoButton.getAttribute("data-project");
-      showtodos(indexproject, true);
+      reference(indexproject,true);
     }
   }
   function completetodo(e) {
-    let indextodo =
-      e.target.parentElement.parentElement.getAttribute("data-key");
-    let indexproject = _createtodoButton.getAttribute("data-project");
+    let indextodo =e.target.parentElement.parentElement.getAttribute("data-key");
+    let indexproject = e.target.parentElement.parentElement.getAttribute("data-project");
     projects.getFromList(indexproject).getList[indextodo].completed = true;
+    saveproject();
   }
   function changechecktodo(e) {
     let indexcheck = e.target.id.replace("check", "");
@@ -424,47 +445,91 @@ let dom = (function () {
       e.target.parentElement.parentElement.parentElement.getAttribute(
         "data-key"
       );
-    console.log(indextodo);
-    let indexproject = _createtodoButton.getAttribute("data-project");
+    let indexproject = e.target.parentElement.parentElement.parentElement.getAttribute("data-project");
     projects
       .getFromList(indexproject)
       .getList[indextodo].setCheck(indexcheck, e.target.value);
-    console.log(
-      projects.getFromList(indexproject).getList[indextodo].checklist[
-        indexcheck
-      ].value
-    );
+    saveproject();
   }
   return {
+    _buttons,
+    _wrapper,
     showMyProjects,
     showMinimumtoDo,
+    showtodos,
   };
 })();
-if (projects.getList.length == 0) dom.showMyProjects();
-
-function showtodaytodos(){
-  for(let i = 0 ; i<projects.getList.length;i++){
+function showtodaytodos() {
+  dom._buttons.innerHTML = "";
+  dom._wrapper.innerHTML = "";
+  for (let i = 0; i < projects.getList.length; i++) {
     let project = projects.getList[i];
-    for(let j = 0; j<project.getList.length;j++){
+    for (let j = 0; j < project.getList.length; j++) {
       let now = new Date();
       let dateDue = project.getList[j].dueDate;
-      if(differenceInHours(dateDue,new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0))<=24){
-        dom.showMinimumtoDo(project.getList[j],j);
+      if (
+        differenceInHours(
+          dateDue,
+          new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0)
+        ) <= 24
+      ) {
+        dom.showMinimumtoDo(project.getList[j], j, i,showtodaytodos, true);
       }
-
     }
   }
 }
-function showupcomingtodos(){
-  for(let i = 0 ; i<projects.getList.length;i++){
+function showupcomingtodos() {
+  dom._buttons.innerHTML = "";
+  dom._wrapper.innerHTML = "";
+  for (let i = 0; i < projects.getList.length; i++) {
     let project = projects.getList[i];
-    for(let j = 0; j<project.getList.length;j++){
+    for (let j = 0; j < project.getList.length; j++) {
       let now = new Date();
       let dateDue = project.getList[j].dueDate;
-      if(differenceInHours(dateDue,new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0))>24){
-        dom.showMinimumtoDo(project.getList[j],j);
+      if (
+        differenceInHours(
+          dateDue,
+          new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0)
+        ) > 24
+      ) {
+        dom.showMinimumtoDo(project.getList[j], j, i,showupcomingtodos, true);
       }
-
     }
   }
+}
+
+function getbackmethods(value) {
+  delete value.getList;
+  delete value.default;
+  Object.assign(projects, value);
+  for (let i = 0; i < projects.getList.length; i++) {
+    let oldproject = projects.getList[i];
+    let newproject = project();
+    delete oldproject.getList;
+    Object.assign(newproject, oldproject);
+    projects.getList[i] = newproject;
+    for (let j = 0; j < newproject.getList.length; j++) {
+      let newtodo = todo("", "", "", "", "", "");
+      let oldtodo = newproject.getList[j];
+      delete oldtodo.checklist;
+      Object.assign(newtodo, oldtodo);
+      newproject.getList[j] = newtodo;
+      newtodo.dueDate = new Date(newtodo.dueDate);
+      for (let k = 0; k < newtodo.checklist.length; k++) {
+        let newcheck = check();
+        let oldcheck = newtodo.checklist[k];
+        Object.assign(newcheck, oldcheck);
+        newtodo.checklist[k];
+      }
+    }
+  }
+}
+if (storage.getItem("projects") == null) {
+  dom.showMyProjects();
+} else {
+  let temp = storage.getItem("projects");
+  let value = JSON.parse(temp);
+  getbackmethods(value);
+  let defaultindex = projects.default;
+  dom.showtodos(defaultindex, true);
 }
