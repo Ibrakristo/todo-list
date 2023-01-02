@@ -109,8 +109,8 @@ let dom = (function () {
   }
   _init();
   let _content = document.querySelector(".content");
-  let _buttons = _content.firstElementChild;
-  let _wrapper = _content.lastElementChild;
+  let buttons = _content.firstElementChild;
+  let wrapper = _content.lastElementChild;
   let _createProjectButton = document.createElement("button");
   _createProjectButton.innerText = "Create";
   _createProjectButton.addEventListener("click", _creatingProject);
@@ -119,7 +119,7 @@ let dom = (function () {
   _createtodoButton.innerText = "Create";
 
   function creatingtodo() {
-    _wrapper.innerHTML = "";
+    wrapper.innerHTML = "";
     let form = document.createElement("form");
     form.classList.add("form-wrapper");
 
@@ -224,10 +224,10 @@ let dom = (function () {
         showtodos(num, true);
       }
     }
-    _wrapper.appendChild(form);
+    wrapper.appendChild(form);
   }
   function _creatingProject() {
-    _wrapper.innerHTML = "";
+    wrapper.innerHTML = "";
     let form = document.createElement("form");
     form.classList.add("form-wrapper");
     let name = document.createElement("input");
@@ -255,12 +255,12 @@ let dom = (function () {
       }
     }
 
-    _wrapper.appendChild(form);
+    wrapper.appendChild(form);
   }
   let showMyProjects = function () {
-    _buttons.innerHTML = "";
-    _wrapper.innerHTML = "";
-    _buttons.appendChild(_createProjectButton);
+    buttons.innerHTML = "";
+    wrapper.innerHTML = "";
+    buttons.appendChild(_createProjectButton);
     for (let i = 0; i < projects.getList.length; i++) {
       let project = document.createElement("div");
       project.classList.add("project");
@@ -290,7 +290,7 @@ let dom = (function () {
       p_wrapper.appendChild(description);
       project.appendChild(p_wrapper);
       project.appendChild(div);
-      _wrapper.appendChild(project);
+      wrapper.appendChild(project);
       p_wrapper.addEventListener("click", showtodos);
     }
 
@@ -312,9 +312,9 @@ let dom = (function () {
     } else {
       num = this.parentElement.getAttribute("data-key");
     }
-    _wrapper.innerHTML = "";
-    _buttons.innerHTML = "";
-    _buttons.appendChild(_createtodoButton);
+    wrapper.innerHTML = "";
+    buttons.innerHTML = "";
+    buttons.appendChild(_createtodoButton);
     _createtodoButton.setAttribute("data-project", num);
     let temp = projects.getFromList(num);
     let list = temp.getList;
@@ -358,7 +358,7 @@ let dom = (function () {
     todo.appendChild(title);
     todo.appendChild(dueDate);
     todo.appendChild(detailsButton);
-    _wrapper.appendChild(todo);
+    wrapper.appendChild(todo);
 
     function details(e) {
       let indextodo = e.target.parentElement.getAttribute("data-key");
@@ -368,7 +368,7 @@ let dom = (function () {
     }
   }
   function showtoDo(obj, indextodo,projectindex,reference) {
-    _wrapper.innerHTML = "";
+    wrapper.innerHTML = "";
     let todo = document.createElement("div");
     todo.classList.add("todo-wrapper");
     todo.setAttribute("data-key", indextodo);
@@ -420,7 +420,7 @@ let dom = (function () {
     todo.appendChild(priority);
     todo.appendChild(notes);
     todo.appendChild(checklist);
-    _wrapper.appendChild(todo);
+    wrapper.appendChild(todo);
     let backButton = document.createElement("button");
     backButton.id = "back";
     backButton.innerText = "Done.";
@@ -452,8 +452,8 @@ let dom = (function () {
     saveproject();
   }
   return {
-    _buttons,
-    _wrapper,
+    _buttons: buttons,
+    _wrapper: wrapper,
     showMyProjects,
     showMinimumtoDo,
     showtodos,
